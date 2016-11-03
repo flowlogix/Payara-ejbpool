@@ -5,6 +5,9 @@
  */
 package com.flowlogix.ejbpool;
 
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.ejb.LocalBean;
@@ -17,22 +20,22 @@ import javax.ejb.LocalBean;
 @LocalBean
 public class PooledStatelessBean {
     public PooledStatelessBean() {
-        log.info("Stateless Constructor");
+        log.fine("Stateless Constructor");
     }
 
 
     public void incrInvocations() {
-        ++numInvocations;
-        log.info("Incrementing Invocation Number");
-        log.info("Stateless: Exit");
+        log.fine("Incrementing Invocation Number");
+        allBeans.put(this, Void.TYPE);
+        log.fine("Stateless: Exit");
     }
 
 
-    public int getInvocations() {
-        return numInvocations;
+    public static int getInvocations() {
+        return allBeans.size();
     }
 
 
-    private int numInvocations = 0;
+    private static final Map<PooledStatelessBean, Object> allBeans = Collections.synchronizedMap(new IdentityHashMap<>());
     private static final Logger log = Logger.getLogger(StartupBean.class.getName());
 }

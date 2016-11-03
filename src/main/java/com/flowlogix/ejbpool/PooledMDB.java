@@ -5,6 +5,7 @@
  */
 package com.flowlogix.ejbpool;
 
+import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -31,19 +32,20 @@ import javax.jms.MessageListener;
 })
 public class PooledMDB implements MessageListener {
     public PooledMDB() {
-        log.finest("Constructor");
+        log.fine("MDB: Constructor");
     }
     
 
     @Override
     public void onMessage(Message message) {
         try {
-            log.info(String.format("MDB Read: %s", message.getBody(String.class)));
+            log.fine(String.format("MDB Read: %s", message.getBody(String.class)));
 //            Thread.sleep(1000);
         } catch (JMSException /* | InterruptedException */ ex) {
             log.log(Level.SEVERE, "JMS read", ex);
         }
         allBeans.put(this, Void.TYPE);
+        log.fine("MDB Exit");
     }
     
     
@@ -52,6 +54,6 @@ public class PooledMDB implements MessageListener {
     }
 
 
-    private static final Map<PooledMDB, Object> allBeans = new IdentityHashMap<>();
+    private static final Map<PooledMDB, Object> allBeans = Collections.synchronizedMap(new IdentityHashMap<>());
     private static final Logger log = Logger.getLogger(PooledMDB.class.getName());
 }

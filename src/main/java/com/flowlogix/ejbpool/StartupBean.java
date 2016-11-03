@@ -35,10 +35,13 @@ public class StartupBean {
 
     private void testSessionBeanPool() {
         int numOfInvocations = 10;
-        IntStream.range(1, numOfInvocations).forEach(ic -> mes.execute(() -> psb.incrInvocations()));
-        int totalInvocations = psb.getInvocations();
+        IntStream.range(0, numOfInvocations).forEach(ic -> mes.execute(() -> psb.incrInvocations()));
+        try {
+            Thread.sleep(1 * 1000);
+        } catch (InterruptedException ex) {}
+        int totalInvocations = PooledStatelessBean.getInvocations();
         log.info(String.format("Stateless - Number of Invocations: %d", totalInvocations));
-        if(totalInvocations < numOfInvocations) {
+        if(totalInvocations > 1) {
             log.info("Stateless: More than one thread!");
         }
     }
@@ -51,8 +54,9 @@ public class StartupBean {
 
     private void doTestMDBPool() {
         int numOfInvocations = 10;
-        JMSContext jmsc = cf.createContext();
-        IntStream.range(1, numOfInvocations).forEach(ic -> jmsc.createProducer().send(q, jmsc.createTextMessage("hello")));
+        try (JMSContext jmsc = cf.createContext()) {
+            IntStream.range(0, numOfInvocations).forEach(ic -> jmsc.createProducer().send(q, jmsc.createTextMessage("hello")));
+        }
         try {
             Thread.sleep(1000);
         } catch (InterruptedException ex) {}

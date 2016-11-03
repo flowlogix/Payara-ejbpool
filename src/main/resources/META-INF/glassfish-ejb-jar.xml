@@ -6,13 +6,15 @@
       <ejb-name>PooledStatelessBean</ejb-name>
       <bean-pool>
           <max-pool-size>1</max-pool-size>
+          <max-wait-time-in-millis>0</max-wait-time-in-millis>
+          <!--<steady-pool-size>1</steady-pool-size>-->
       </bean-pool>
     </ejb>
     <ejb>
       <ejb-name>PooledMDB</ejb-name>
       <bean-pool>
           <max-pool-size>1</max-pool-size>
-          <steady-pool-size>1</steady-pool-size>
+          <resize-quantity>1</resize-quantity>
       </bean-pool>
     </ejb>
   </enterprise-beans>
